@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./src/service/service.js",
     "test": "npm run eslint",
-    "eslint": "eslint --ext .js src/"
+    "eslint": "eslint --fix --ext .js src/"
   },
   "pre-commit": [
     "test"
@@ -25,5 +25,8 @@
     "eslint": "7.1.0",
     "eslint-config-htmlacademy": "0.5.2",
     "pre-commit": "1.2.2"
+  },
+  "dependencies": {
+    "commander": "5.1.0"
   }
 }
