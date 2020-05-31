@@ -11,7 +11,7 @@ const getRandomItem = (arr) => arr[getRandomInt(0, arr.length - 1)];
 const shuffle = (array) => {
   const resultArray = array.slice();
   for (let i = resultArray.length - 1; i > 0; i--) {
-    const randomNumber = Math.floor(Math.random() * (i + 1));
+    const randomNumber = getRandomInt(0, i);
     [resultArray[randomNumber], resultArray[i]] = [
       resultArray[i],
       resultArray[randomNumber],
