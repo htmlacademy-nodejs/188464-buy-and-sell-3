@@ -5,6 +5,32 @@ const path = require(`path`);
 const chalk = require(`chalk`);
 const {shuffle, getRandomInt, getRandomItem} = require(`./utils`);
 const FILE_NAME = `mocks.json`;
+const DATA_PATH = path.resolve(__dirname, `../../data`);
+const DESCRIPTIONS_FILE = path.resolve(DATA_PATH, `sentences.txt`);
+const TITLES_FILE = path.resolve(DATA_PATH, `titles.txt`);
+const CATEGORIES_FILE = path.resolve(DATA_PATH, `categories.txt`);
+
+const getDataFromFile = async (file) => {
+  let data;
+  try {
+    data = await fsPromises.readFile(file, {encoding: `utf-8`});
+  } catch (err) {
+    console.error(chalk.red(err));
+    process.exit(1);
+  }
+  return data.split(`\n`);
+};
+
+const getData = async () => {
+  const [titles, categories, descriptions] = await Promise.all([
+    getDataFromFile(TITLES_FILE),
+    getDataFromFile(CATEGORIES_FILE),
+    getDataFromFile(DESCRIPTIONS_FILE)
+  ]);
+  return {
+    titles, categories, descriptions
+  };
+};
 
 const MIN_SUM_VALUE = 1000;
 const MAX_SUM_VALUE = 100000;
@@ -17,14 +43,11 @@ const MAX_DESCRIPTION_COUNT = 5;
 const MIN_MOCK_COUNT = 1;
 const MAX_MOCK_COUNT = 1000;
 
-const titles = [`Продам книги Стивена Кинга.`, `Продам новую приставку Sony Playstation 5.`, `Продам отличную подборку фильмов на VHS.`, `Куплю антиквариат.`, `Куплю породистого кота.`, `Продам коллекцию журналов «Огонёк».`, `Отдам в хорошие руки подшивку «Мурзилка».`, `Продам советскую посуду. Почти не разбита.`, `Куплю детские санки.`];
-const descriptions = [`Товар в отличном состоянии.`, `Пользовались бережно и только по большим праздникам.`, `Продаю с болью в сердце...`, `Бонусом отдам все аксессуары.`, `Даю недельную гарантию.`, `Если товар не понравится — верну всё до последней копейки.`, `Это настоящая находка для коллекционера!`, `Если найдёте дешевле — сброшу цену.`, `Таких предложений больше нет!`, `Две страницы заляпаны свежим кофе.`, `При покупке с меня бесплатная доставка в черте города.`, `Кажется, что это хрупкая вещь.`, `Мой дед не мог её сломать.`, `Кому нужен этот новый телефон, если тут такое...`, `Не пытайтесь торговаться. Цену вещам я знаю.`];
 const types = [`offer`, `sale`];
-const categories = [`Книги`, `Разное`, `Посуда`, `Игры`, `Животные`, `Журналы`];
 
-const makeTitle = () => getRandomItem(titles);
-const makeDescription = () => shuffle(descriptions, getRandomInt(1, MAX_DESCRIPTION_COUNT)).join(` `);
-const makeCategory = () => shuffle(categories, getRandomInt(1, categories.length));
+const makeTitle = (titles) => getRandomItem(titles);
+const makeDescription = (descriptions) => shuffle(descriptions, getRandomInt(1, MAX_DESCRIPTION_COUNT)).join(` `);
+const makeCategory = (categories) => shuffle(categories, getRandomInt(1, categories.length));
 const makeSum = () => getRandomInt(MIN_SUM_VALUE, MAX_SUM_VALUE);
 const makeType = () => getRandomItem(types);
 
@@ -33,17 +56,18 @@ const makePicture = () => {
   return `item${count > 9 ? count : `0${count}`}.jpg`;
 };
 
-const generateOne = () => ({
+const generateOne = ({titles, categories, descriptions}) => ({
   type: makeType(),
-  title: makeTitle(),
-  description: makeDescription(),
+  title: makeTitle(titles),
+  description: makeDescription(descriptions),
   sum: makeSum(),
   picture: makePicture(),
-  category: makeCategory(),
+  category: makeCategory(categories),
 });
 
 const generateMock = async (count) => {
-  const mock = [...new Array(count)].map(generateOne);
+  const mockData = await getData();
+  const mock = [...new Array(count)].map(() => generateOne(mockData));
   const mockPath = path.resolve(__dirname, `../../${FILE_NAME}`);
   try {
     await fsPromises.writeFile(mockPath, JSON.stringify(mock, null, 4));
