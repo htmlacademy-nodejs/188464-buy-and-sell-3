@@ -2,6 +2,7 @@
 
 const fs = require(`fs`);
 const path = require(`path`);
+const chalk = require(`chalk`);
 const {shuffle, getRandomInt, getRandomItem} = require(`./utils`);
 const FILE_NAME = `mocks.json`;
 
@@ -22,13 +23,8 @@ const types = [`offer`, `sale`];
 const categories = [`Книги`, `Разное`, `Посуда`, `Игры`, `Животные`, `Журналы`];
 
 const makeTitle = () => getRandomItem(titles);
-
-const makeDescription = () => shuffle(descriptions).slice(0, getRandomInt(1, MAX_DESCRIPTION_COUNT)).join(` `);
-
-const makeCategory = () => {
-  return shuffle(categories).slice(0, getRandomInt(1, categories.length - 1));
-};
-
+const makeDescription = () => shuffle(descriptions, getRandomInt(1, MAX_DESCRIPTION_COUNT)).join(` `);
+const makeCategory = () => shuffle(categories, getRandomInt(1, categories.length));
 const makeSum = () => getRandomInt(MIN_SUM_VALUE, MAX_SUM_VALUE);
 const makeType = () => getRandomItem(types);
 
@@ -54,7 +50,7 @@ const generateMock = (count) => {
       console.error(`Can't write data to file ${FILE_NAME}`);
       process.exit(1);
     }
-    console.info(`${FILE_NAME} created`);
+    console.info(chalk.green(`${FILE_NAME} created`));
   });
 };
 
@@ -63,10 +59,10 @@ const generate = (value) => {
   const parsedValue = Number.parseInt(value, 10);
   const count = parsedValue || MIN_MOCK_COUNT;
   if (count > MAX_MOCK_COUNT) {
-    console.error(`No more than ${MAX_MOCK_COUNT} ads`);
+    console.error(chalk.red(`No more than ${MAX_MOCK_COUNT} ads`));
     process.exit(1);
   } else if (count < 0) {
-    console.error(`Count must be positive integer`);
+    console.error(chalk.red(`Count must be positive integer`));
     process.exit(1);
   }
   generateMock(count);
