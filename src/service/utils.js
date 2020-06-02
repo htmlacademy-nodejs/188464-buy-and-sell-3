@@ -8,9 +8,10 @@ const getRandomInt = (min, max) => {
 
 const getRandomItem = (arr) => arr[getRandomInt(0, arr.length - 1)];
 
-const shuffle = (array) => {
+const shuffle = (array, length = array.length) => {
+  length = Math.min(length, array.length);
   const resultArray = array.slice();
-  for (let i = resultArray.length - 1; i > 0; i--) {
+  for (let i = resultArray.length - 1; i > (resultArray.length - length - 1); i--) {
     const randomNumber = getRandomInt(0, i);
     [resultArray[randomNumber], resultArray[i]] = [
       resultArray[i],
@@ -18,7 +19,7 @@ const shuffle = (array) => {
     ];
   }
 
-  return resultArray;
+  return resultArray.slice(resultArray.length - length);
 };
 
 module.exports = {
