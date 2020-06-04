@@ -3,6 +3,7 @@ const cli = require(`sywac`);
 const chalk = require(`chalk`);
 const {version} = require(`../../package`);
 const {generate} = require(`./generate`);
+const {start} = require(`./server`);
 
 cli.style({
   usagePrefix: (str) => chalk.gray(str),
@@ -22,6 +23,7 @@ cli.style({
 })
 .preface(`Program launches http-server and generates a data file for API.`)
 .number(`-g, --generate <count>`, {desc: `Generate mocks.json`})
+.number(`-s, --server [port]`, {desc: `Start server`})
 .help(`-h, --help`, {desc: `Print this text`})
 .boolean(`-v, --version`, {desc: `Show version`})
 .showHelpByDefault()
@@ -34,6 +36,8 @@ cli.parseAndExit()
     console.log(chalk.blue(version));
   } else if (parsed.generate !== undefined) {
     generate(parsed.generate);
+  } else if (parsed.server !== undefined) {
+    start(parsed.server);
   } else {
     throw Error(`unknown option`);
   }

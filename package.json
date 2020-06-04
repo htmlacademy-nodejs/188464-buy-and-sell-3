@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node ./src/service/service.js",
     "test": "npm run eslint",
-    "eslint": "eslint --fix --ext .js src/"
+    "eslint": "eslint --fix --ext .js src/",
+    "server": "nodemon ./src/service/service.js --server"
   },
   "pre-commit": [
     "test"
@@ -24,10 +25,12 @@
   "devDependencies": {
     "eslint": "7.1.0",
     "eslint-config-htmlacademy": "0.5.2",
+    "nodemon": "2.0.4",
     "pre-commit": "1.2.2"
   },
   "dependencies": {
     "chalk": "4.0.0",
+    "http-status-codes": "1.4.0",
     "sywac": "1.3.0"
   }
 }
